@@ -9,7 +9,7 @@ using namespace std;
 void dispArray(int *mas, int n);
 void BubbleSort(int *mas, int n);
 void QuickSort(int *B, int from, int to);
-void Merge(int *A, int first, int last);
+void Merge(int *A, int, int,int);
 void MergeSort(int *A, int, int);
 
 int main()
@@ -26,7 +26,7 @@ int main()
     int *b = new int[n];
     int *c = new int[n];
 
-    for(int i=0; i<n; i++) 
+    for(int i=0; i<n; i++)
     {
         a[i] = 1 + rand() %(n);
         b[i] = a[i];
@@ -57,7 +57,7 @@ int main()
     cout<<endl;
 
     start = clock();
-    MergeSort(c, 0,n);
+    MergeSort(c, 0,n-1);
     end = clock();
     time3 = end - start;
     cout <<"Sorted array merge: "<<endl;
@@ -81,29 +81,58 @@ void dispArray(int *mas, int n)
     cout <<endl;
 }
 
-void MergeSort(int *A, int low, int high)
-{
-      int i = low;
-      int j = high;
-      int x = A[(low+high)/2];
-      do {
-          while(A[i] < x) ++i;
-          while(A[j] > x) --j;
-          if(i <= j)
-            {
-              int temp = A[i];
-              A[i] = A[j];
-              A[j] = temp;
-              i++; j--;
-            }
-      }
-      while(i < j);
 
-      if(low < j)
-        MergeSort(A, low, j);
-      if(i < high)
-        MergeSort(A, i, high);
+void Merge(int *A, int left, int right, int medium)
+{
+    int j = left;
+    int k = medium + 1;
+    int count = right - left + 1;
+
+    if (count <= 1) return;
+
+    int *TmpMas = new int[count];
+
+    for (int i = 0; i < count; i++)
+    {
+        if (j <= medium && k <= right)
+        {
+            if (A[j] < A[k])
+                TmpMas[i] = A[j++];
+            else
+                TmpMas[i] = A[k++];
+        }
+        else
+        {
+            if (j <= medium)
+                TmpMas[i] = A[j++];
+            else
+                TmpMas[i] = A[k++];
+        }
+    }
+
+    j = 0;
+    for (int i = left; i <= right; i++)
+    {
+        A[i] = TmpMas[j++];
+    }
+    delete[] TmpMas;
 }
+
+void MergeSort(int *A, int l, int r)
+{
+    int m;
+
+    // Условие выхода из рекурсии
+    if(l >= r) return;
+
+    m = (l + r) / 2;
+
+    // Рекурсивная сортировка полученных массивов
+    MergeSort(A, l, m);
+    MergeSort(A, m + 1, r);
+    Merge(A, l, r, m);
+}
+
 
 
 void BubbleSort(int *mas, int n)
